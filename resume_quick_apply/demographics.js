@@ -55,7 +55,7 @@
     if (/hispanic|latino/.test(q)) return KEYS.hispanicLatino;
     if (/veteran/.test(q)) return KEYS.veteran;
     if (/disabilit/.test(q)) return KEYS.disability;
-    if (/sexual orientation/.test(q)) return "";
+    if (/sexual orientation|transgender|assigned at birth/.test(q)) return "";
     if (/gender identity|\bgender\b|\bsex\b/.test(q)) return KEYS.gender;
     if (/\brace\b|racial|race\s*\/\s*ethnicity|race and ethnicity/.test(q)) return KEYS.raceEthnicity;
     return "";
@@ -121,7 +121,7 @@
   function selectHasExistingValue(select) {
     if (select.selectedIndex < 0) return false;
     const option = select.options[select.selectedIndex];
-    return !!norm(option?.value || option?.textContent || "");
+    return !!norm(option?.value || "");
   }
 
   function fillSelect(select, key, answer) {
@@ -181,8 +181,8 @@
   }
 
   try {
-    neverAutoPatterns.push(/hispanic|latino/i, /sexual orientation|transgender/i);
-    learnBlockPatterns.push(/hispanic|latino/i, /sexual orientation|transgender/i);
+    neverAutoPatterns.push(/hispanic|latino/i, /sexual orientation|transgender|assigned at birth/i);
+    learnBlockPatterns.push(/hispanic|latino/i, /sexual orientation|transgender|assigned at birth/i);
   } catch {}
 
   document.addEventListener("click", event => {
