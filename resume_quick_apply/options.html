@@ -97,13 +97,77 @@
       <option>Work</option>
       <option>Other</option>
     </select></div>
-    <div><label>EEO questions (optional)</label><select id="eeoDefault"><option value=""></option><option value="Decline to answer">Decline to answer</option></select></div>
+    <div><label>EEO questions (legacy default)</label><select id="eeoDefault"><option value=""></option><option value="Decline to answer">Decline to answer</option></select></div>
   </div>
   <button id="saveDefaults" style="margin-top:14px">Save defaults</button>
 </div>
 
 <div class="card">
-  <h2>4. Contact & profile updates</h2>
+  <h2>4. Optional demographic answers</h2>
+  <div class="muted">
+    These answers are voluntary and sensitive. Resume Quick Apply will never infer them from your résumé or learn them from an application.
+    It only attempts to fill a demographic question when you explicitly save the matching answer below. If a site's wording is ambiguous or cannot be matched safely, the field stays blank.
+  </div>
+  <div class="grid" style="margin-top:12px">
+    <div>
+      <label>Gender / sex</label>
+      <select id="demographicGender">
+        <option value=""></option>
+        <option>Female</option>
+        <option>Male</option>
+        <option>Non-binary</option>
+        <option>Other</option>
+        <option>Decline to answer</option>
+      </select>
+    </div>
+    <div>
+      <label>Hispanic / Latino</label>
+      <select id="demographicHispanicLatino">
+        <option value=""></option>
+        <option>Yes</option>
+        <option>No</option>
+        <option>Decline to answer</option>
+      </select>
+    </div>
+    <div>
+      <label>Race / ethnicity</label>
+      <select id="demographicRaceEthnicity">
+        <option value=""></option>
+        <option>American Indian or Alaska Native</option>
+        <option>Asian</option>
+        <option>Black or African American</option>
+        <option>Hispanic or Latino</option>
+        <option>Native Hawaiian or Other Pacific Islander</option>
+        <option>White</option>
+        <option>Two or More Races</option>
+        <option>Decline to answer</option>
+      </select>
+    </div>
+    <div>
+      <label>Veteran status</label>
+      <select id="demographicVeteran">
+        <option value=""></option>
+        <option>Protected veteran</option>
+        <option>Not a protected veteran</option>
+        <option>Decline to answer</option>
+      </select>
+    </div>
+    <div>
+      <label>Disability status</label>
+      <select id="demographicDisability">
+        <option value=""></option>
+        <option>Yes</option>
+        <option>No</option>
+        <option>Decline to answer</option>
+      </select>
+    </div>
+  </div>
+  <button id="saveDemographics" style="margin-top:14px">Save demographic answers</button>
+  <span id="demographicsStatus"></span>
+</div>
+
+<div class="card">
+  <h2>5. Contact & profile updates</h2>
   <div class="muted">These fields can still be corrected manually. Re-loading a résumé updates information that the new résumé explicitly contains and preserves supplemental information it does not.</div>
   <div class="grid" style="margin-top:12px">
     <div><label>First name</label><input id="firstName"></div>
@@ -128,7 +192,7 @@
 </div>
 
 <div class="card">
-  <h2>5. Learned answers</h2>
+  <h2>6. Learned answers</h2>
   <div id="learnedCount" class="muted">0 reusable answers learned.</div>
   <div class="muted" style="margin-top:4px">When a user manually answers a new ordinary application question, the extension remembers the exact question for future applications. Sensitive/legal questions are not learned automatically.</div>
   <button id="clearLearned" class="danger" style="margin-top:12px">Clear learned answers</button>
@@ -147,5 +211,6 @@
 
 <script src="resume_parser.js"></script>
 <script src="options.js"></script>
+<script src="demographics_options.js"></script>
 </body>
 </html>
