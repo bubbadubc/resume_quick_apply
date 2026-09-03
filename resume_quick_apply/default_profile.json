@@ -1,0 +1,26 @@
+{
+  "firstName": "",
+  "lastName": "",
+  "fullName": "",
+  "email": "",
+  "phone": "",
+  "city": "",
+  "state": "",
+  "stateAbbr": "",
+  "zip": "",
+  "country": "United States",
+  "address1": "",
+  "linkedin": "",
+  "education": {
+    "school": "",
+    "degree": "",
+    "field": "",
+    "startYear": "",
+    "endYear": ""
+  },
+  "certifications": [],
+  "skills": [],
+  "workHistory": [],
+  "knownAnswers": {},
+  "resumeText": ""
+}

@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Resume Quick Apply Setup</title>
+<style>
+  body{font-family:Arial,sans-serif;max-width:900px;margin:28px auto;padding:0 20px;color:#24313d;background:#fff}
+  h1{margin:0 0 4px}.sub{color:#66727c;margin-bottom:22px}
+  .card{border:1px solid #d7e0e4;border-radius:10px;padding:18px;margin:14px 0}
+  .card h2{font-size:17px;margin:0 0 8px}.muted{color:#69757e;font-size:13px;line-height:1.4}
+  .source{background:#f5f9fa}.good{color:#18747a;font-weight:700}.warn{color:#9a5c00;font-weight:700}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  label{font-size:12px;font-weight:700;display:block;margin-bottom:4px}
+  input,select,textarea{width:100%;box-sizing:border-box;padding:9px;border:1px solid #cbd5da;border-radius:6px;background:white}
+  button{border:0;border-radius:7px;padding:10px 15px;font-weight:700;cursor:pointer;background:#24313d;color:white;margin-right:8px}
+  button.secondary{background:#edf2f4;color:#24313d}
+  button.danger{background:#f6ecec;color:#8e2828}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  #resumeStatus,#saveStatus,#parseSummary{margin-top:10px;font-size:13px;line-height:1.4}
+  details{margin-top:12px} summary{cursor:pointer;font-weight:700}
+  textarea{min-height:280px;font-family:Consolas,monospace;font-size:12px}
+  .jobCard{border:1px solid #dfe6e9;border-radius:8px;padding:13px;margin:10px 0;background:#fbfcfc}
+  .jobTitle{font-weight:700;margin-bottom:9px}.dateStatus{font-size:11px;margin-left:8px;color:#69757e}.dateStatus.verified{color:#18747a;font-weight:700}.dateStatus.missing{color:#a45d00;font-weight:700}
+  .dateGrid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:8px;align-items:end}
+  .dateGrid input{min-width:0}
+  .compact textarea{min-height:90px;font-family:Arial,sans-serif}
+  @media(max-width:720px){.grid,.dateGrid{grid-template-columns:1fr 1fr}.dateGrid .currentBox{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<h1>Resume Quick Apply</h1>
+<div class="sub">Load a résumé once. It becomes the primary source for employment, education, skills, certifications, and routine application questions.</div>
+
+<div class="card source">
+  <h2>1. Source-of-truth résumé</h2>
+  <div id="currentResume" class="muted">No résumé loaded yet.</div>
+  <div class="row" style="margin-top:12px">
+    <input id="resumeFile" type="file" accept=".docx,.txt,.md,.rtf,.pdf" style="max-width:520px">
+    <button id="loadResume">Load / Replace résumé</button>
+    <button id="reparseResume" class="secondary">Re-parse current résumé</button>
+    <button id="exportProfile" class="secondary">Export profile backup</button>
+    <label class="secondary" style="display:inline-block;padding:10px 15px;border-radius:7px;cursor:pointer;font-weight:700;background:#edf2f4;color:#24313d">
+      Import profile backup
+      <input id="importProfile" type="file" accept=".json" style="display:none">
+    </label>
+  </div>
+  <div id="resumeStatus"></div>
+  <div class="muted" style="margin-top:8px">DOCX is recommended because it can be parsed locally and then uploaded directly to employer applications. A new résumé replaces résumé-derived facts but does not erase one-time application defaults or learned answers.</div>
+</div>
+
+
+<div class="card">
+  <h2>2. Verify résumé facts once</h2>
+  <div class="muted">
+    These are the facts applications repeatedly ask for. They are populated from the résumé when possible and remain editable. Verified employment dates are stored separately so a résumé re-parse cannot erase them.
+    If a later résumé contains updated dates, reloading it updates the matching jobs while preserving corrections it cannot infer.
+  </div>
+
+  <h3 style="font-size:14px;margin:16px 0 8px">Work history & dates</h3>
+  <div id="workHistoryEditor"></div>
+
+  <h3 style="font-size:14px;margin:18px 0 8px">Education</h3>
+  <div class="grid">
+    <div><label>School</label><input id="eduSchool"></div>
+    <div><label>Degree</label><input id="eduDegree"></div>
+    <div><label>Field / major</label><input id="eduField"></div>
+    <div><label>Education start year</label><input id="eduStartYear" inputmode="numeric"></div>
+    <div><label>Education end / graduation year</label><input id="eduEndYear" inputmode="numeric"></div>
+  </div>
+
+  <h3 style="font-size:14px;margin:18px 0 8px">Certifications</h3>
+  <div class="compact">
+    <label>One certification per line</label>
+    <textarea id="certificationsText"></textarea>
+  </div>
+
+  <button id="saveResumeFacts" style="margin-top:14px">Save verified résumé facts</button>
+  <span id="factsStatus"></span>
+</div>
+
+<div class="card">
+  <h2>3. One-time application defaults</h2>
+  <div class="muted">These are common questions a résumé normally cannot answer. Leave anything blank if you prefer to answer it manually.</div>
+  <div class="grid" style="margin-top:12px">
+    <div><label>Authorized to work in the U.S.</label><select id="workAuthorizedUS"><option value=""></option><option>Yes</option><option>No</option></select></div>
+    <div><label>Require employer sponsorship now/future</label><select id="requiresSponsorship"><option value=""></option><option>Yes</option><option>No</option></select></div>
+    <div><label>18 years or older</label><select id="over18"><option value=""></option><option>Yes</option><option>No</option></select></div>
+    <div><label>Willing to relocate</label><select id="willingToRelocate"><option value=""></option><option>Yes</option><option>No</option></select></div>
+    <div><label>Default desired salary (optional)</label><input id="desiredSalary" placeholder="e.g. 75000"></div>
+    <div><label>Preferred start date (optional)</label><input id="preferredStartDate" placeholder="e.g. 10/05/2026"></div>
+    <div><label>Notice period (optional)</label><input id="noticePeriod" placeholder="e.g. Two weeks"></div>
+    <div><label>Willing to travel (optional)</label><select id="willingToTravel"><option value=""></option><option>Yes</option><option>No</option></select></div>
+    <div><label>Phone device type</label><select id="phoneDeviceType">
+      <option value=""></option>
+      <option>Mobile</option>
+      <option>Home</option>
+      <option>Work</option>
+      <option>Other</option>
+    </select></div>
+    <div><label>EEO questions (optional)</label><select id="eeoDefault"><option value=""></option><option value="Decline to answer">Decline to answer</option></select></div>
+  </div>
+  <button id="saveDefaults" style="margin-top:14px">Save defaults</button>
+</div>
+
+<div class="card">
+  <h2>4. Contact & profile updates</h2>
+  <div class="muted">These fields can still be corrected manually. Re-loading a résumé updates information that the new résumé explicitly contains and preserves supplemental information it does not.</div>
+  <div class="grid" style="margin-top:12px">
+    <div><label>First name</label><input id="firstName"></div>
+    <div><label>Last name</label><input id="lastName"></div>
+    <div><label>Email</label><input id="email"></div>
+    <div><label>Phone</label><input id="phone"></div>
+    <div><label>Street address</label><input id="address1"></div>
+    <div><label>City</label><input id="city"></div>
+    <div><label>State</label><input id="state"></div>
+    <div><label>ZIP</label><input id="zip"></div>
+    <div style="grid-column:1/-1"><label>LinkedIn URL</label><input id="linkedin"></div>
+  </div>
+  <button id="saveProfile" style="margin-top:14px">Save profile changes</button>
+  <span id="saveStatus"></span>
+
+  <details>
+    <summary>Advanced structured profile editor</summary>
+    <div class="muted" style="margin:8px 0">This is the complete reusable profile. It can be edited directly if a job history date, title, skill, or other extracted value needs correcting.</div>
+    <textarea id="profileJson"></textarea>
+    <div><button id="saveJson">Save structured profile</button></div>
+  </details>
+</div>
+
+<div class="card">
+  <h2>5. Learned answers</h2>
+  <div id="learnedCount" class="muted">0 reusable answers learned.</div>
+  <div class="muted" style="margin-top:4px">When a user manually answers a new ordinary application question, the extension remembers the exact question for future applications. Sensitive/legal questions are not learned automatically.</div>
+  <button id="clearLearned" class="danger" style="margin-top:12px">Clear learned answers</button>
+</div>
+
+
+<div class="card" style="border-color:#e6c9c9">
+  <h2>Reset</h2>
+  <div class="muted">
+    Clear the uploaded résumé, parsed profile, verified work-history dates, one-time application defaults,
+    and all learned answers. This returns the extension to a fresh-install state.
+  </div>
+  <button id="clearAllData" class="danger" style="margin-top:12px">Clear All</button>
+  <span id="clearAllStatus"></span>
+</div>
+
+<script src="resume_parser.js"></script>
+<script src="options.js"></script>
+</body>
+</html>
