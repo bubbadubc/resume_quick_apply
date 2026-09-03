@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Resume Quick Apply Setup</title>
+<style>
+  body{font-family:Arial,sans-serif;max-width:900px;margin:28px auto;padding:0 20px;color:#24313d;background:#fff}
+  h1{margin:0 0 4px}.sub{color:#66727c;margin-bottom:22px}
+  .card{border:1px solid #d7e0e4;border-radius:10px;padding:18px;margin:14px 0}
+  .card h2{font-size:17px;margin:0 0 8px}.muted{color:#69757e;font-size:13px;line-height:1.4}
+  .source{background:#f5f9fa}.good{color:#18747a;font-weight:700}.warn{color:#9a5c00;font-weight:700}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  label{font-size:12px;font-weight:700;display:block;margin-bottom:4px}
+  input,select,textarea{width:100%;box-sizing:border-box;padding:9px;border:1px solid #cbd5da;border-radius:6px;background:white}
+  button{border:0;border-radius:7px;padding:10px 15px;font-weight:700;cursor:pointer;background:#24313d;color:white;margin-right:8px}
+  button.secondary{background:#edf2f4;color:#24313d}
+  button.danger{background:#f6ecec;color:#8e2828}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  #resumeStatus,#saveAllStatus{margin-top:10px;font-size:13px;line-height:1.4}
+  textarea{min-height:280px;font-family:Consolas,monospace;font-size:12px}
+  .jobCard{border:1px solid #dfe6e9;border-radius:8px;padding:13px;margin:10px 0;background:#fbfcfc}
+  .jobTitle{font-weight:700;margin-bottom:9px}.dateStatus{font-size:11px;margin-left:8px;color:#69757e}.dateStatus.verified{color:#18747a;font-weight:700}.dateStatus.missing{color:#a45d00;font-weight:700}
+  .dateGrid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:8px;align-items:end}
+  .dateGrid input{min-width:0}
+  .compact textarea{min-height:90px;font-family:Arial,sans-serif}
+  .actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  @media(max-width:720px){.grid,.dateGrid{grid-template-columns:1fr 1fr}.dateGrid .currentBox{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<h1>Resume Quick Apply</h1>
+<div class="sub">Load a résumé once. Review your reusable information, then save everything with one button.</div>
+
+<div class="card source">
+  <h2>1. Source-of-truth résumé</h2>
+  <div id="currentResume" class="muted">No résumé loaded yet.</div>
+  <div class="row" style="margin-top:12px">
+    <input id="resumeFile" type="file" accept=".docx,.txt,.md,.rtf,.pdf" style="max-width:520px">
+    <button id="loadResume">Load / Replace résumé</button>
+  </div>
+  <div id="resumeStatus"></div>
+  <div class="muted" style="margin-top:8px">DOCX is recommended because it can be parsed locally and then reused for employer résumé-upload fields. Loading a new résumé updates résumé-derived facts while preserving saved application defaults.</div>
+</div>
+
+<div class="card">
+  <h2>2. Verify résumé facts</h2>
+  <div class="muted">Review anything extracted from the résumé. Verified employment dates remain separate from parser output so future résumé replacements cannot erase matching corrections.</div>
+
+  <h3 style="font-size:14px;margin:16px 0 8px">Work history & dates</h3>
+  <div id="workHistoryEditor"></div>
+
+  <h3 style="font-size:14px;margin:18px 0 8px">Education</h3>
+  <div class="grid">
+    <div><label>School</label><input id="eduSchool"></div>
+    <div><label>Degree</label><input id="eduDegree"></div>
+    <div><label>Field / major</label><input id="eduField"></div>
+    <div><label>Education start year</label><input id="eduStartYear" inputmode="numeric"></div>
+    <div><label>Education end / graduation year</label><input id="eduEndYear" inputmode="numeric"></div>
+  </div>
+
+  <h3 style="font-size:14px;margin:18px 0 8px">Certifications</h3>
+  <div class="compact">
+    <label>One certification per line</label>
+    <textarea id="certificationsText"></textarea>
+  </div>
+</div>
+
+<div class="card">
+  <h2>3. Application defaults</h2>
+  <div class="muted">These are recurring questions a résumé normally cannot answer. Leave anything blank if you prefer to answer it manually.</div>
+  <div class="grid" style="margin-top:12px">
+    <div><label>Authorized to work in the U.S.</label><select id="workAuthorizedUS"><option value=""></option><option>Yes</option><option>No</option></select></div>
+    <div><label>Require employer sponsorship now/future</label><select id="requiresSponsorship"><option value=""></option><option>Yes</option><option>No</option></select></div>
+    <div><label>18 years or older</label><select id="over18"><option value=""></option><option>Yes</option><option>No</option></select></div>
+    <div><label>Willing to relocate</label><select id="willingToRelocate"><option value=""></option><option>Yes</option><option>No</option></select></div>
+    <div><label>Default desired salary (optional)</label><input id="desiredSalary" placeholder="e.g. 75000"></div>
+    <div><label>Preferred start date (optional)</label><input id="preferredStartDate" placeholder="e.g. 10/05/2026"></div>
+    <div><label>Notice period (optional)</label><input id="noticePeriod" placeholder="e.g. Two weeks"></div>
+    <div><label>Willing to travel (optional)</label><select id="willingToTravel"><option value=""></option><option>Yes</option><option>No</option></select></div>
+    <div><label>Phone device type</label><select id="phoneDeviceType"><option value=""></option><option>Mobile</option><option>Home</option><option>Work</option><option>Other</option></select></div>
+    <div><label>EEO questions (legacy default)</label><select id="eeoDefault"><option value=""></option><option value="Decline to answer">Decline to answer</option></select></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>4. Optional demographic answers</h2>
+  <div class="muted">These answers are voluntary and sensitive. Resume Quick Apply never infers them or learns them from applications. Only explicitly saved matching answers may be used; ambiguous questions stay blank.</div>
+  <div class="grid" style="margin-top:12px">
+    <div><label>Gender / sex</label><select id="demographicGender"><option value=""></option><option>Female</option><option>Male</option><option>Non-binary</option><option>Other</option><option>Decline to answer</option></select></div>
+    <div><label>Hispanic / Latino</label><select id="demographicHispanicLatino"><option value=""></option><option>Yes</option><option>No</option><option>Decline to answer</option></select></div>
+    <div><label>Race / ethnicity</label><select id="demographicRaceEthnicity"><option value=""></option><option>American Indian or Alaska Native</option><option>Asian</option><option>Black or African American</option><option>Hispanic or Latino</option><option>Native Hawaiian or Other Pacific Islander</option><option>White</option><option>Two or More Races</option><option>Decline to answer</option></select></div>
+    <div><label>Veteran status</label><select id="demographicVeteran"><option value=""></option><option>Protected veteran</option><option>Not a protected veteran</option><option>Decline to answer</option></select></div>
+    <div><label>Disability status</label><select id="demographicDisability"><option value=""></option><option>Yes</option><option>No</option><option>Decline to answer</option></select></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>5. Contact & profile</h2>
+  <div class="muted">Correct anything the résumé parser did not capture exactly.</div>
+  <div class="grid" style="margin-top:12px">
+    <div><label>First name</label><input id="firstName"></div>
+    <div><label>Last name</label><input id="lastName"></div>
+    <div><label>Email</label><input id="email"></div>
+    <div><label>Phone</label><input id="phone"></div>
+    <div><label>Street address</label><input id="address1"></div>
+    <div><label>City</label><input id="city"></div>
+    <div><label>State</label><input id="state"></div>
+    <div><label>ZIP</label><input id="zip"></div>
+    <div style="grid-column:1/-1"><label>LinkedIn URL</label><input id="linkedin"></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>6. Learned answers</h2>
+  <div id="learnedCount" class="muted">0 reusable answers learned.</div>
+  <div class="muted" style="margin-top:4px">Ordinary recurring answers can still be remembered automatically. Sensitive/legal answers are never learned automatically. Reset clears learned answers along with the rest of the profile.</div>
+</div>
+
+<div class="card">
+  <h2>Save or reset</h2>
+  <div class="muted" style="margin-bottom:12px">Save Changes stores all edits above at once. Reset returns Resume Quick Apply to a fresh-install state.</div>
+  <div class="actions">
+    <button id="saveAllChanges">Save Changes</button>
+    <button id="resetAllData" class="danger">Reset</button>
+    <span id="saveAllStatus"></span>
+  </div>
+</div>
+
+<!-- Compatibility controls for the existing 0.6.4 options.js. They are intentionally not visible. -->
+<div hidden aria-hidden="true">
+  <button id="reparseResume"></button>
+  <button id="exportProfile"></button>
+  <input id="importProfile" type="file" accept=".json">
+  <button id="saveResumeFacts"></button>
+  <span id="factsStatus"></span>
+  <button id="saveDefaults"></button>
+  <button id="saveDemographics"></button>
+  <span id="demographicsStatus"></span>
+  <button id="saveProfile"></button>
+  <span id="saveStatus"></span>
+  <textarea id="profileJson"></textarea>
+  <button id="saveJson"></button>
+  <button id="clearLearned"></button>
+  <button id="clearAllData"></button>
+  <span id="clearAllStatus"></span>
+</div>
+
+<script src="resume_parser.js"></script>
+<script src="options.js"></script>
+<script src="demographics_options.js"></script>
+<script src="unified_options.js"></script>
+</body>
+</html>

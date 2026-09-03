@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Resume Quick Apply",
-  "version": "0.6.4",
-  "description": "Resume-first job application autofill with application-step-only prompting, persistent verified dates, optional demographic defaults, and full profile reset controls.",
+  "version": "0.6.5",
+  "description": "Resume-first job application autofill with application-step-only prompting, persistent verified dates, optional demographic defaults, and simplified one-save settings.",
   "permissions": [
     "storage",
     "activeTab",
