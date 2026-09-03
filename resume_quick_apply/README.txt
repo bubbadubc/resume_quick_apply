@@ -1,4 +1,4 @@
-RESUME QUICK APPLY — 0.6.3
+RESUME QUICK APPLY — 0.6.4
 
 INTERNAL FOLDER
 ---------------
@@ -150,3 +150,28 @@ After confirmation, it removes:
 - leftover session application state
 
 It then restores a blank fresh-install profile so the extension can immediately be set up again.
+
+
+NEW IN 0.6.4 — OPTIONAL DEMOGRAPHIC ANSWERS
+-------------------------------------------
+The settings page now includes a dedicated optional demographic section for:
+- gender / sex
+- Hispanic / Latino status
+- race / ethnicity
+- veteran status
+- disability status
+
+All demographic answers are blank by default.
+
+Resume Quick Apply never infers these answers from a résumé and never automatically learns them from
+an application. They are only used when the user explicitly stores a matching answer.
+
+Demographic filling is intentionally conservative:
+- existing employer-form values are preserved
+- only select and radio controls are filled
+- option matching must be an exact answer or a known equivalent wording
+- ambiguous standalone "Ethnicity" questions are left blank
+- multi-select demographic checkboxes are left blank
+- sexual-orientation and transgender questions remain sensitive and are not learned automatically
+
+The legacy EEO "Decline to answer" default remains available for backwards compatibility.
