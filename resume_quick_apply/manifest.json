@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Resume Quick Apply",
-  "version": "0.6.3",
-  "description": "Resume-first job application autofill with application-step-only prompting, persistent verified dates, reusable profile facts, and full profile reset controls.",
+  "version": "0.6.4",
+  "description": "Resume-first job application autofill with application-step-only prompting, persistent verified dates, optional demographic defaults, and full profile reset controls.",
   "permissions": [
     "storage",
     "activeTab",
@@ -25,7 +25,8 @@
         "<all_urls>"
       ],
       "js": [
-        "content.js"
+        "content.js",
+        "demographics.js"
       ],
       "run_at": "document_idle"
     }
