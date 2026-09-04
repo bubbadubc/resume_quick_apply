@@ -16,12 +16,18 @@
   #finish{background:#f6ecec;color:#8e2828}
   #settings{background:#edf2f4;color:#24313d;margin-top:14px}
   .hint{font-size:11px;color:#7a858d;line-height:1.4;margin-top:10px}
+  body.dark-mode{background:#15191d;color:#e8edf0}
+  body.dark-mode #source,body.dark-mode .hint{color:#aab5bc}
+  body.dark-mode #state{background:#20282d;color:#c2ccd2}
+  body.dark-mode #state.active{background:#19302b;color:#8ed8c8}
+  body.dark-mode #settings{background:#303940;color:#eef2f4}
+  body.dark-mode #finish{background:#3a2729;color:#ffb8bd}
 </style>
 </head>
 <body>
 <h1>Resume Quick Apply</h1>
-<div class="version">APPLICATION SESSION 0.6.6</div>
-<div id="source">Checking résumé source…</div>
+<div class="version">CONTEXT-AWARE 0.6.9</div>
+<div id="source">Checking resume source…</div>
 <div id="state">Application mode is off for this tab.</div>
 <button id="start">Start Application</button>
 <button id="autofill" disabled>Autofill Page</button>

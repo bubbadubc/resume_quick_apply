@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Resume Quick Apply",
-  "version": "0.6.6",
-  "description": "Resume-first job application autofill with user-controlled application sessions, manual per-page autofill, optional demographic defaults, and simplified settings.",
+  "version": "0.6.9",
+  "description": "Resume-first job application autofill with user-controlled sessions, context-aware field interpretation, safer work-experience overlays, aliases, saved dark mode, and optional demographic defaults.",
   "permissions": [
     "storage",
     "activeTab",
@@ -27,6 +27,8 @@
       "js": [
         "content.js",
         "demographics.js",
+        "context_engine.js",
+        "smart_fields.js",
         "session_controller.js"
       ],
       "run_at": "document_idle"

@@ -1,5 +1,5 @@
 (() => {
-  const contactFields = ["firstName","lastName","email","phone","address1","city","state","zip","linkedin"];
+  const contactFields = ["firstName","lastName","aliases","email","phone","address1","city","state","zip","linkedin"];
   const defaultFields = [
     "workAuthorizedUS","requiresSponsorship","over18","willingToRelocate",
     "desiredSalary","preferredStartDate","noticePeriod","willingToTravel","phoneDeviceType","eeoDefault",
@@ -66,6 +66,7 @@
         profile[key] = document.getElementById(key).value.trim();
       }
       profile.fullName = `${profile.firstName || ""} ${profile.lastName || ""}`.trim();
+      profile.darkMode = !!document.getElementById("darkMode")?.checked;
 
       const applicationDefaults = {...(state.applicationDefaults || {})};
       for (const key of defaultFields) {
@@ -86,14 +87,14 @@
   async function resetAllData() {
     const confirmed = confirm(
       "Reset ALL Resume Quick Apply data?\n\n" +
-      "This removes the uploaded résumé, parsed profile, verified dates, saved defaults, demographic answers, and learned answers."
+      "This removes the uploaded resume, parsed profile, verified dates, saved defaults, demographic answers, and learned answers."
     );
     if (!confirmed) return;
 
     const blankProfile = {
-      firstName:"", lastName:"", fullName:"", email:"", phone:"",
+      firstName:"", lastName:"", fullName:"", aliases:"", email:"", phone:"",
       address1:"", city:"", state:"", stateAbbr:"", zip:"",
-      country:"United States", linkedin:"",
+      country:"United States", linkedin:"", darkMode:false,
       education:{school:"", degree:"", field:"", startYear:"", endYear:""},
       certifications:[], skills:[], workHistory:[], knownAnswers:{}, resumeText:""
     };
@@ -131,10 +132,99 @@
 
     const status = document.getElementById("saveAllStatus");
     if (status) status.textContent = "Reset complete.";
+    const aliases = document.getElementById("aliases");
+    if (aliases) aliases.value = "";
 
+    applyDarkMode(false);
+    const darkMode = document.getElementById("darkMode");
+    if (darkMode) darkMode.checked = false;
     if (typeof render === "function") await render();
   }
 
+  async function ensureWorkHistoryPhoneFields() {
+    const editor = document.getElementById("workHistoryEditor");
+    if (!editor) return;
+
+    const {profile = {}} = await chrome.storage.local.get(["profile"]);
+    const jobs = profile.workHistory || [];
+
+    for (const card of editor.querySelectorAll(".jobCard")) {
+      if (card.querySelector('[data-k="phone"]')) continue;
+
+      const index = Number(card.dataset.jobIndex);
+      const job = jobs[index] || {};
+      const grid = card.querySelector(".grid");
+      if (!grid) continue;
+
+      const wrap = document.createElement("div");
+      wrap.className = "rqa-employer-phone";
+
+      const label = document.createElement("label");
+      label.textContent = "Employer phone (optional)";
+
+      const input = document.createElement("input");
+      input.dataset.k = "phone";
+      input.type = "tel";
+      input.value = job.phone || "";
+      input.placeholder = "Used only inside this job's work experience";
+
+      wrap.append(label, input);
+      grid.appendChild(wrap);
+    }
+  }
+
+  function watchWorkHistoryEditor() {
+    const editor = document.getElementById("workHistoryEditor");
+    if (!editor) return;
+    const observer = new MutationObserver(() => ensureWorkHistoryPhoneFields());
+    observer.observe(editor, {childList:true, subtree:true});
+    ensureWorkHistoryPhoneFields();
+    setTimeout(ensureWorkHistoryPhoneFields, 100);
+    setTimeout(ensureWorkHistoryPhoneFields, 500);
+  }
+
+  function applyDarkMode(enabled) {
+    document.body.classList.toggle("dark-mode", !!enabled);
+  }
+
+  function removeAccentedEs(root = document.body) {
+    if (!root) return;
+    const replacements = {
+      "\u00e9":"e","\u00e8":"e","\u00ea":"e","\u00eb":"e",
+      "\u00c9":"E","\u00c8":"E","\u00ca":"E","\u00cb":"E"
+    };
+    const accentedEPattern = /[\u00e9\u00e8\u00ea\u00eb\u00c9\u00c8\u00ca\u00cb]/g;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) {
+      const value = node.nodeValue || "";
+      if (accentedEPattern.test(value)) {
+        accentedEPattern.lastIndex = 0;
+        node.nodeValue = value.replace(accentedEPattern, char => replacements[char] || char);
+      }
+      accentedEPattern.lastIndex = 0;
+    }
+  }
+
+  async function initializeAppearance() {
+    const {profile = {}} = await chrome.storage.local.get(["profile"]);
+    const aliases = document.getElementById("aliases");
+    if (aliases) aliases.value = profile.aliases || "";
+    const toggle = document.getElementById("darkMode");
+    if (toggle) toggle.checked = !!profile.darkMode;
+    applyDarkMode(!!profile.darkMode);
+    removeAccentedEs();
+  }
+
+  document.getElementById("darkMode")?.addEventListener("change", event => {
+    applyDarkMode(event.target.checked);
+  });
+
+  const textObserver = new MutationObserver(() => removeAccentedEs());
+  if (document.body) textObserver.observe(document.body,{subtree:true,childList:true,characterData:true});
+
   document.getElementById("saveAllChanges")?.addEventListener("click", saveAllChanges);
   document.getElementById("resetAllData")?.addEventListener("click", resetAllData);
+  watchWorkHistoryEditor();
+  initializeAppearance();
 })();

@@ -24,27 +24,38 @@
   .dateGrid input{min-width:0}
   .compact textarea{min-height:90px;font-family:Arial,sans-serif}
   .actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .toggleRow{display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .toggleRow label{margin:0;font-size:14px}
+  .toggleRow input{width:auto;transform:scale(1.2)}
+  body.dark-mode{color:#e8edf0;background:#15191d}
+  body.dark-mode .card{border-color:#39434a;background:#20262b}
+  body.dark-mode .source{background:#1c2529}
+  body.dark-mode .sub,body.dark-mode .muted,body.dark-mode .dateStatus{color:#aab5bc}
+  body.dark-mode input,body.dark-mode select,body.dark-mode textarea{background:#151a1e;color:#eef2f4;border-color:#46525a}
+  body.dark-mode .jobCard{background:#1a2024;border-color:#39434a}
+  body.dark-mode button.secondary{background:#303940;color:#eef2f4}
+  body.dark-mode button.danger{background:#3a2729;color:#ffb8bd}
   @media(max-width:720px){.grid,.dateGrid{grid-template-columns:1fr 1fr}.dateGrid .currentBox{grid-column:1/-1}}
 </style>
 </head>
 <body>
 <h1>Resume Quick Apply</h1>
-<div class="sub">Load a résumé once. Review your reusable information, then save everything with one button.</div>
+<div class="sub">Load a resume once. Review your reusable information, then save everything with one button.</div>
 
 <div class="card source">
-  <h2>1. Source-of-truth résumé</h2>
-  <div id="currentResume" class="muted">No résumé loaded yet.</div>
+  <h2>1. Source-of-truth resume</h2>
+  <div id="currentResume" class="muted">No resume loaded yet.</div>
   <div class="row" style="margin-top:12px">
     <input id="resumeFile" type="file" accept=".docx,.txt,.md,.rtf,.pdf" style="max-width:520px">
-    <button id="loadResume">Load / Replace résumé</button>
+    <button id="loadResume">Load / Replace resume</button>
   </div>
   <div id="resumeStatus"></div>
-  <div class="muted" style="margin-top:8px">DOCX is recommended because it can be parsed locally and then reused for employer résumé-upload fields. Loading a new résumé updates résumé-derived facts while preserving saved application defaults.</div>
+  <div class="muted" style="margin-top:8px">DOCX is recommended because it can be parsed locally and then reused for employer resume-upload fields. Loading a new resume updates resume-derived facts while preserving saved application defaults.</div>
 </div>
 
 <div class="card">
-  <h2>2. Verify résumé facts</h2>
-  <div class="muted">Review anything extracted from the résumé. Verified employment dates remain separate from parser output so future résumé replacements cannot erase matching corrections.</div>
+  <h2>2. Verify resume facts</h2>
+  <div class="muted">Review anything extracted from the resume. Verified employment dates remain separate from parser output so future resume replacements cannot erase matching corrections.</div>
 
   <h3 style="font-size:14px;margin:16px 0 8px">Work history & dates</h3>
   <div id="workHistoryEditor"></div>
@@ -67,7 +78,7 @@
 
 <div class="card">
   <h2>3. Application defaults</h2>
-  <div class="muted">These are recurring questions a résumé normally cannot answer. Leave anything blank if you prefer to answer it manually.</div>
+  <div class="muted">These are recurring questions a resume normally cannot answer. Leave anything blank if you prefer to answer it manually.</div>
   <div class="grid" style="margin-top:12px">
     <div><label>Authorized to work in the U.S.</label><select id="workAuthorizedUS"><option value=""></option><option>Yes</option><option>No</option></select></div>
     <div><label>Require employer sponsorship now/future</label><select id="requiresSponsorship"><option value=""></option><option>Yes</option><option>No</option></select></div>
@@ -96,10 +107,11 @@
 
 <div class="card">
   <h2>5. Contact & profile</h2>
-  <div class="muted">Correct anything the résumé parser did not capture exactly.</div>
+  <div class="muted">Correct anything the resume parser did not capture exactly.</div>
   <div class="grid" style="margin-top:12px">
     <div><label>First name</label><input id="firstName"></div>
     <div><label>Last name</label><input id="lastName"></div>
+    <div style="grid-column:1/-1"><label>Aliases / former names</label><input id="aliases" placeholder="e.g. Jane Smith; Jane Doe"></div>
     <div><label>Email</label><input id="email"></div>
     <div><label>Phone</label><input id="phone"></div>
     <div><label>Street address</label><input id="address1"></div>
@@ -111,7 +123,18 @@
 </div>
 
 <div class="card">
-  <h2>6. Learned answers</h2>
+  <h2>6. Appearance</h2>
+  <div class="toggleRow">
+    <div>
+      <label for="darkMode">Dark Mode</label>
+      <div class="muted">Use dark mode for the extension popup and profile settings.</div>
+    </div>
+    <input id="darkMode" type="checkbox">
+  </div>
+</div>
+
+<div class="card">
+  <h2>7. Learned answers</h2>
   <div id="learnedCount" class="muted">0 reusable answers learned.</div>
   <div class="muted" style="margin-top:4px">Ordinary recurring answers can still be remembered automatically. Sensitive/legal answers are never learned automatically. Reset clears learned answers along with the rest of the profile.</div>
 </div>

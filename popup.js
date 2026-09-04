@@ -53,10 +53,11 @@ function renderSession(active, message="") {
 
 async function initialize() {
   const tab = await activeTab();
-  const {resumeSource} = await chrome.storage.local.get(["resumeSource"]);
+  const {resumeSource,profile = {}} = await chrome.storage.local.get(["resumeSource","profile"]);
+  document.body.classList.toggle("dark-mode", !!profile.darkMode);
   document.getElementById("source").textContent = resumeSource?.filename
-    ? `Source résumé: ${resumeSource.filename}`
-    : "No source résumé loaded yet. Open Profile & Settings first.";
+    ? `Source resume: ${resumeSource.filename}`
+    : "No source resume loaded yet. Open Profile & Settings first.";
 
   if (!tab?.id) {
     renderSession(false,"No active browser tab found.");
@@ -90,15 +91,34 @@ document.getElementById("autofill").addEventListener("click", async () => {
     return;
   }
 
-  renderSession(true,"Autofilling this page…");
+  renderSession(true,"Reading the page context and autofilling…");
+
+  // Context goes first so generic labels inside work/education overlays are claimed
+  // before the legacy global mapper can mistake them for applicant contact fields.
+  const contextBefore = await sendToTab(tab.id,{type:"RQA_CONTEXT_AUTOFILL"});
+
   const response = await sendToTab(tab.id,{type:"START_AUTOPILOT"});
   if (!response?.ok) {
     renderSession(true,"Could not reach this page. Reload it, then try Autofill Page again.");
     return;
   }
 
-  const filled = Number(response.filled || 0);
-  renderSession(true,`Filled ${filled} field${filled === 1 ? "" : "s"}. Review the page before continuing.`);
+  // Some ATS controls render only after the first fill/change events, so run the
+  // contextual pass once more after the legacy filler, then use the broad safe fallback.
+  const contextAfter = await sendToTab(tab.id,{type:"RQA_CONTEXT_AUTOFILL"});
+  const smartResponse = await sendToTab(tab.id,{type:"RQA_SMART_AUTOFILL"});
+
+  const filled = Number(contextBefore?.filled || 0) + Number(response.filled || 0) +
+    Number(contextAfter?.filled || 0) + Number(smartResponse?.filled || 0);
+  const ambiguous = Math.max(
+    Number(contextBefore?.ambiguousWorkPanels || 0),
+    Number(contextAfter?.ambiguousWorkPanels || 0)
+  );
+
+  const note = ambiguous
+    ? " Some work-experience fields were left blank because the role could not be identified safely."
+    : "";
+  renderSession(true,`Filled ${filled} field${filled === 1 ? "" : "s"}. Review the page before continuing.${note}`);
 });
 
 document.getElementById("finish").addEventListener("click", async () => {
